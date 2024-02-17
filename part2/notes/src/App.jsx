@@ -1,32 +1,63 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Note from './components/Note'
+import noteService from './services/notes'
 
-const App = (props) => {
-  console.log('App');
+const App = () => {
   const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('') 
-  const [showAll, setShowAll] = useState(true)
+  const [newNote, setNewNote] = useState('')
+  const [showAll, setShowAll] = useState(false)
 
-  const handleNoteChange = (event) => {
-    console.log(event.target.value)
-    setNewNote(event.target.value)
+  useEffect(() => {
+    noteService
+      .getAll()
+      .then(initialNotes => {
+        setNotes(initialNotes)
+      })
+  }, [])
+
+  const toggleImportanceOf = id => {
+    const note = notes.find(n => n.id === id)
+    const changedNote = { ...note, important: !note.important }
+
+    noteService
+      .update(id, changedNote)
+      .then(returnedNote => {
+        console.log(returnedNote)
+        setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+      })
+      .catch(error => {
+        console.log(error)
+        alert(
+          `the note '${note.content}' was already deleted from server`
+        )
+        setNotes(notes.filter(n => n.id !== id))
+      })
   }
 
-  const addNote = (event) => {
+const addNote = (event) => {
     event.preventDefault()
     const noteObject = {
       content: newNote,
-      important: Math.random() < 0.5,
-      id: notes.length + 1,
+      important: Math.random() > 0.5,
+      //id: notes.length + 1,
     }
-    setNotes(notes.concat(noteObject))
-    setNewNote('')
-    console.log('button clicked', event.target)
+
+    noteService
+    .create(noteObject)
+    .then(returnedNote => {
+      setNotes(notes.concat(returnedNote))
+      setNewNote('')
+      console.log(response)
+    })
+  }
+
+  const handleNoteChange = (event) => {
+    setNewNote(event.target.value)
   }
 
   const notesToShow = showAll
-  ? notes
-  : notes.filter(note => note.important === true)
+    ? notes
+    : notes.filter(note => note.important)
 
   return (
     <div>
@@ -35,16 +66,23 @@ const App = (props) => {
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all' }
         </button>
-      </div>
+      </div>      
       <ul>
         {notesToShow.map(note => 
-          <Note key={note.id} note={note} />
+          <Note 
+            key={note.id} 
+            note={note} 
+            toggleImportance={() => toggleImportanceOf(note.id)}
+            />
         )}
       </ul>
       <form onSubmit={addNote}>
-        <input value={newNote} onChange={handleNoteChange} />
+      <input
+          value={newNote}
+          onChange={handleNoteChange}
+        />
         <button type="submit">save</button>
-      </form>  
+      </form> 
     </div>
   )
 }
