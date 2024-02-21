@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import Note from './components/Note'
 import Notification from './components/Notification'
+import Footer from './components/Footer'
 import noteService from './services/notes'
 
 const App = () => {
-  const [notes, setNotes] = useState([])
+  const [notes, setNotes] = useState(null)
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
@@ -16,6 +17,10 @@ const App = () => {
         setNotes(initialNotes)
       })
   }, [])
+
+  if (!notes) { 
+    return null 
+  }
 
   const addNote = (event) => {
     event.preventDefault()
@@ -83,7 +88,8 @@ const App = () => {
           onChange={handleNoteChange}
         />
         <button type="submit">save</button>
-      </form> 
+      </form>
+      <Footer />
     </div>
   )
 }
