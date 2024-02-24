@@ -29,16 +29,19 @@ const unknownEndpoint = (request, response) => {
 }
 
 app.get('/', (request, response) => {
+  console.log('index.js -> GET /')
   response.send('<h1>Hello World!</h1>')
 })
 
 app.get('/api/notes', (request, response) => {
+  console.log('index.js -> GET /api/notes')
   Note.find({}).then(notes => {
     response.json(notes)
   })
 })
 
 app.post('/api/notes', (request, response) => {
+  console.log('index.js -> POST /api/notes')
   const body = request.body
 
   if (body.content === undefined) {
@@ -56,12 +59,14 @@ app.post('/api/notes', (request, response) => {
 })
 
 app.get('/api/notes/:id', (request, response) => {
+  console.log('index.js -> GET /api/notes/:id', request.params.id)
   Note.findById(request.params.id).then(note => {
     response.json(note)
   })
 })
 
 app.delete('/api/notes/:id', (request, response) => {
+  console.log('index.js -> DELETE /api/notes/:id', request.params.id)
   const id = Number(request.params.id)
   notes = notes.filter(note => note.id !== id)
 

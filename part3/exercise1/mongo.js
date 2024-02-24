@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+console.log('mongoose')
 
 if (process.argv.length < 3) {
   console.log('give password as argument')
@@ -6,12 +7,18 @@ if (process.argv.length < 3) {
 }
 
 const password = process.argv[2]
+console.log('password', password)
+
+// const url =
+//   `mongodb+srv://fullstack:${password}@cluster0.o1opl.mongodb.net/noteApp?retryWrites=true&w=majority`
 
 const url =
   `mongodb+srv://mehmetyagci53:${password}@mycluster.nqz1ts5.mongodb.net/noteApp?retryWrites=true&w=majority`
+console.log('url', url)  
 
 mongoose.set('strictQuery', false)
 mongoose.connect(url).then(() => {
+  console.log('connected to MongoDB')
   const noteSchema = new mongoose.Schema({
     content: String,
     important: Boolean,
@@ -31,6 +38,7 @@ mongoose.connect(url).then(() => {
   })
   */
   Note.find({}).then(result => {
+    console.log('notes:')
     result.forEach(note => {
       console.log(note)
     })
