@@ -12,10 +12,7 @@ const Note = require('../models/note')
 beforeEach(async () => {
   await Note.deleteMany({})
 
-  for (let note of helper.initialNotes) {
-    let noteObject = new Note(note)
-    await noteObject.save()
-  }
+  await Note.insertMany(helper.initialNotes)
 })
 
 test('notes are returned as json', async () => {
@@ -85,7 +82,6 @@ test('a specific note can be viewed', async () => {
     .expect('Content-Type', /application\/json/)
 
   assert.deepStrictEqual(resultNote.body, noteToView)
-  //assert.strictEqual(JSON.stringify(resultNote.body.toString()), JSON.stringify(noteToView.toString()))
 })
 
 test('a note can be deleted', async () => {
